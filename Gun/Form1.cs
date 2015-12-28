@@ -17,6 +17,11 @@ namespace GunFU
             InitializeComponent();
         }
 
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+        }
+
         private void ExitButton_Click(object sender, EventArgs e)
         {
 
@@ -24,7 +29,7 @@ namespace GunFU
 
         private void ConnectButton_Click(object sender, EventArgs e)
         {
-
+            AsyncClassClient.Run();
         }
     }
 }
