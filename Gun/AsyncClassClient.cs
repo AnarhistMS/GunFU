@@ -100,11 +100,11 @@ namespace GunFU
             try
             {
                 // Create the state object.
-                StateObject state = new StateObject();
+                BufferObject state = new BufferObject();
                 state.workSocket = client;
 
                 // Begin receiving the data from the remote device.
-                client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+                client.BeginReceive(state.buffer, 0, BufferObject.BufferSize, 0,
                     new AsyncCallback(ReceiveCallback), state);
             }
             catch (Exception e)
@@ -119,7 +119,7 @@ namespace GunFU
             {
                 // Retrieve the state object and the client socket 
                 // from the asynchronous state object.
-                StateObject state = (StateObject)ar.AsyncState;
+                BufferObject state = (BufferObject)ar.AsyncState;
                 Socket client = state.workSocket;
 
                 // Read data from the remote device.
@@ -131,7 +131,7 @@ namespace GunFU
                     state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
 
                     // Get the rest of the data.
-                    client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+                    client.BeginReceive(state.buffer, 0, BufferObject.BufferSize, 0,
                         new AsyncCallback(ReceiveCallback), state);
                 }
                 else
