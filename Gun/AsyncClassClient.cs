@@ -21,6 +21,8 @@ namespace GunFU
 
         private const int port = 54455;
 
+        public static Socket Client1;
+
         private static void StartClient()
         {
             // Connect to a remote device.
@@ -34,33 +36,40 @@ namespace GunFU
                 IPEndPoint remoteEP = new IPEndPoint(ipAddress, port);
 
                 // Create a TCP/IP socket.
-                Socket client = new Socket(AddressFamily.InterNetwork,
+                Client1 = new Socket(AddressFamily.InterNetwork,
                     SocketType.Stream, ProtocolType.Tcp);
 
                 // Connect to the remote endpoint.
-                client.BeginConnect(remoteEP,
-                    new AsyncCallback(ConnectCallback), client);
+                Client1.BeginConnect(remoteEP,
+                    new AsyncCallback(ConnectCallback), Client1);
                 connectDone.WaitOne();
 
                 // Send test data to the remote device.
-                Send(client, "This is a test<EOF>");
+                Send(Client1, "This is a test<EOF>");
                 sendDone.WaitOne();
 
                 // Receive the response from the remote device.
-                Receive(client);
+                Receive(Client1);
                 receiveDone.WaitOne();
 
                 // Write the response to the console.
                 Console.WriteLine("Response received : {0}", response);
 
-                // Release the socket.
-                client.Shutdown(SocketShutdown.Both);
-                client.Close();
 
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
+            }
+        }
+
+        private static void ReleaseSocket()
+        {
+            // Release the socket.
+            if (Client1 != null)
+            {
+                Client1.Shutdown(SocketShutdown.Both);
+                Client1.Close();
             }
         }
 
@@ -177,14 +186,19 @@ namespace GunFU
             StartClient();
         }
 
-        public static void Stop()
+        public static void SendAsync(string data)
         {
-            StopClient();
+            Send(Client1, data);
         }
 
-        private static void StopClient()
+        public static void RecieveAsync()
         {
-            throw new NotImplementedException();
+           Receive(Client1);
+        }
+
+        public static void Stop()
+        {
+            ReleaseSocket();
         }
     }
 }
